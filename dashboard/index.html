@@ -3,14 +3,102 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Token Radar — pre-token protocols ranked by implied value</title>
-<link rel="icon" href="data:,">
+<title>Token Radar — pre-token protocols ranked by expected launch value</title>
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
-<a class="skip" href="#board">Skip to the board</a>
-<main id="board" tabindex="-1" aria-busy="true"></main>
+<header class="top">
+  <div class="brand">
+    <h1>Token Radar</h1>
+    <p class="tag">Every pre-token protocol, ranked by what its launch would be worth &mdash; and what to do about it.</p>
+  </div>
+  <div class="meta">
+    <p id="asof"></p>
+    <p id="rerun" class="rerun">Verifying the board&hellip;</p>
+  </div>
+</header>
+
+<section class="kpis" id="kpis" aria-label="Headline figures"></section>
+
+<section class="controls" aria-label="Filters">
+  <input id="q" type="search" placeholder="Search a protocol&hellip;" aria-label="Search protocols">
+  <select id="fcat" aria-label="Filter by category"><option value="">All categories</option></select>
+  <select id="fchain" aria-label="Filter by chain"><option value="">All chains</option></select>
+  <select id="fverdict" aria-label="Filter by verdict">
+    <option value="">All verdicts</option><option value="FARM">FARM only</option><option value="THIN">THIN only</option><option value="SKIP">SKIP only</option>
+  </select>
+  <label class="check"><input id="fwatch" type="checkbox"> Watchlist only</label>
+  <select id="fsort" aria-label="Sort the board">
+    <option value="rank">Sort: expected value</option>
+    <option value="tvl">Sort: TVL</option>
+    <option value="growth">Sort: 7-day growth</option>
+    <option value="age">Sort: age</option>
+    <option value="net">Sort: net per hour</option>
+    <option value="name">Sort: name</option>
+  </select>
+  <span class="tickets" role="group" aria-label="Farm ticket size">
+    <button data-ticket="1000" class="ticket on">$1K</button><button data-ticket="5000" class="ticket">$5K</button><button data-ticket="10000" class="ticket">$10K</button>
+  </span>
+</section>
+
+<main>
+  <p id="count" class="count"></p>
+  <div class="tablewrap">
+    <table id="board">
+      <thead><tr>
+        <th>#</th><th>Protocol</th><th>TVL</th><th>7d</th><th>Age</th>
+        <th>Expected value</th><th>P25&ndash;P75</th><th>Launch odds</th><th>Verdict</th><th>Net/hr</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <section class="panel" id="model">
+    <h2>The model</h2>
+    <p id="formula" class="formula"></p>
+    <div class="grid2">
+      <div>
+        <h3>Validation, held out</h3>
+        <table class="mini" id="valtable"></table>
+        <h3>Ablation (leave-one-out median miss)</h3>
+        <table class="mini" id="ablation"></table>
+        <p class="note" id="abnote"></p>
+      </div>
+      <div>
+        <h3>Traded comps vs the fitted curve</h3>
+        <div id="scatter"></div>
+        <p class="note" id="bandnote"></p>
+        <h3>Launch odds</h3>
+        <p class="note" id="oddsnote"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="universe">
+    <h2>The whole universe, accounted for</h2>
+    <p class="note">Every one of the snapshot&rsquo;s protocols sits in exactly one bucket. The board ranks the first; the rest are set aside for a stated reason, not silently dropped.</p>
+    <table class="mini" id="ledger"></table>
+  </section>
+</main>
+
+<footer>
+  <p>Implied values are this entry&rsquo;s own claim, fitted from the sealed snapshot dated <span id="footdate"></span>. A protocol is said to record no token, never to have none. Farm figures assume a 5% farmer airdrop, your share of it equal to your share of TVL, and the gas prices in the model card; they are estimates, not promises.</p>
+</footer>
+
+<div id="modal" class="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dname">
+    <button id="mclose" class="mclose" aria-label="Close detail">&times;</button>
+    <h2 id="dname"></h2>
+    <p id="dsub" class="dsub"></p>
+    <dl class="facts" id="dfacts"></dl>
+    <h3>Farm plan</h3>
+    <ol id="dsteps" class="steps"></ol>
+    <p class="note" id="dnote"></p>
+  </div>
+</div>
+
 <script src="../data.js"></script>
+<script src="model.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
